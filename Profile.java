@@ -3,10 +3,10 @@ import javax.sound.sampled.*;
 import java.io.*;
 
 public class Profile extends UserActivity{
-	private String Username;
+	private static String Username;
 	private String Password;
 	private String url;
-	private String profilePicture;
+	private static String profilePicture = "C://Users//Althon Johnson//Pictures//Saved Pictures//Background Images//Sun Wukong";
 	private ArrayList<File> audioSaves;
 	private ArrayList<Profile> Blocked;
 	private ArrayList<Profile> FriendsList;
@@ -21,12 +21,12 @@ public class Profile extends UserActivity{
 	}
 
 	
-	public String getUsername() {
+	public static String getUsername() {
 		return Username;
 	}
 
 
-	public void setUsername(String username) {
+	public static void setUsername(String username) {
 		Username = username;
 	}
 
@@ -51,13 +51,13 @@ public class Profile extends UserActivity{
 	}
 
 
-	public String getProfilePicture() {
+	public static String getProfilePicture() {
 		return profilePicture;
 	}
 
 
-	public void setProfilePicture(String profilePicture) {
-		this.profilePicture = profilePicture;
+	public static void setProfilePicture(String profile) {
+		profilePicture = profile;
 	}
 
 
@@ -97,10 +97,16 @@ public class Profile extends UserActivity{
 
 
 	public Server getFavoriteChats() {
+		Scanner input = new Scanner(System.in);
+		int ch;
+		System.out.println("Which Favorite Chat would you like to choose?");
+		for(int i = 0; i < FriendsList.size(); i++) {
+			System.out.println("Save #" + i + ": " + favoriteChats.get(i));
+		}
+		ch = input.nextInt();
+		input.close();
+		return favoriteChats.get(ch);
 		
-		//use the get friends list body and substitute the array list name
-		
-		return favoriteChats;
 	}
 
 
