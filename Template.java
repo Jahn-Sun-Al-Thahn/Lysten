@@ -59,15 +59,24 @@ public class Template {
 	private JPanel title;
 	private JPanel WestMenu;
 	private JPanel EastMenu;
-	private JLayeredPane CenterPanel;
+	private JPanel CenterPanel;
 	private JPanel CenterSouthPanel;
 	private JPanel navigator;
 	private JPanel MsgPanel;
+	private JPanel CPanel;
+	private JScrollPane scrollPane;
+	private GridLayout TextMsgGrid;
 	private GridLayout WestSideMenu;
 	private GridLayout EastSideMenu;
 	private MidiInstrument keys;
-	JFormattedTextField formattedTextField;
+	private JFormattedTextField formattedTextField;
 	private ArrayList<TextMessage> msgs = new ArrayList<>();
+	private Profile User = new Profile();
+	private Search UserSearch = new Search();
+	private MainFeed Feed = new MainFeed();
+	private Forum Forum = new Forum();
+
+	
 
 	/**
 	 * Launch the application.
@@ -140,49 +149,60 @@ public class Template {
 		CenterSouthPanel.add(navigator);
 
 		JButton btnNewButton_4 = new JButton("Profile");
+		btnNewButton_4.addActionListener(new ProfileListener());
 		navigator.add(btnNewButton_4);
 		JButton btnNewButton_3 = new JButton("Chats");
+		btnNewButton_3.addActionListener(null);
 		navigator.add(btnNewButton_3);
 		JButton btnNewButton_2 = new JButton("Main Feed");
+		//btnNewButton_2.addActionListener(Feed);
 		navigator.add(btnNewButton_2);
 		JButton btnNewButton = new JButton("Forums");
+		//btnNewButton.addActionListener(Forum);
 		navigator.add(btnNewButton);
 		JButton btnNewButton_1 = new JButton("Search");
+		//btnNewButton_1.addActionListener(UserSearch);
 		navigator.add(btnNewButton_1);
 
-		JPanel CPanel = new JPanel();
-		CPanel.setLayout(new BorderLayout());
+		CPanel = new JPanel();
+		CPanel.setLayout(new FlowLayout());
 		CPanel.setBounds(0, 0, 535,643);
+		frame.add(CPanel, BorderLayout.CENTER);
 		
-		CenterPanel = new JLayeredPane();
-		CenterPanel.setPreferredSize(new Dimension(CPanel.getWidth(), CPanel.getHeight()));
-		CenterPanel.setBackground(Color.BLACK);
+		CenterPanel = new JPanel();
+		CenterPanel.setPreferredSize(new Dimension(CPanel.getWidth(), 300));
+		CenterPanel.setOpaque(true);
+		CenterPanel.setVisible(false);
+		CenterPanel.setBackground(Color.gray);
 		CenterPanel.setBorder(BorderFactory.createLineBorder(new Color(0, 128, 0)));
-		CPanel.add(CenterPanel, BorderLayout.CENTER);
-		frame.getContentPane().add(CPanel, BorderLayout.CENTER);
-
-		MsgPanel = new JPanel(new GridLayout(100, 1));
+		
+		
+		TextMsgGrid = new GridLayout(100, 1);
+		MsgPanel = new JPanel(TextMsgGrid);
 		MsgPanel.setSize(520, 643);
 		MsgPanel.setBorder(BorderFactory.createLineBorder(Color.green));
 		MsgPanel.setVisible(true);
-		CenterPanel.add(MsgPanel, JLayeredPane.PALETTE_LAYER);
 		
-		/*JScrollPane scrollPane = new JScrollPane(MsgPanel);
+		scrollPane = new JScrollPane(MsgPanel);
 		scrollPane.setLayout(new ScrollPaneLayout());
 		scrollPane.setPreferredSize(new Dimension(520, 643));
 		scrollPane.setOpaque(true);
 		scrollPane.setVisible(true);
 		scrollPane.setViewportBorder(new EtchedBorder(EtchedBorder.RAISED, null, null));
 		scrollPane.setViewportView(MsgPanel);
-		CenterPanel.add(scrollPane, JLayeredPane.PALETTE_LAYER);*/
+		scrollPane.getVerticalScrollBar().setValue(scrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		//vbarPolicyProperty().setValue(scrollPane.ScrollBarPolicy.NEVER);
+		scrollPane.updateUI();
+		CPanel.add(scrollPane);
 		
-
+		
 		keys = new MidiInstrument();
 		keys.setSize(519, 185);
-		keys.setLocation(1, 460);
+		keys.setLocation(0,0);
 		keys.setOpaque(true);
 		keys.setVisible(false);
-		CenterPanel.add(keys, JLayeredPane.POPUP_LAYER);
+		//CPanel.add(keys, BorderLayout.SOUTH);
+		CenterPanel.add(keys);
 
 		formattedTextField = new JFormattedTextField();
 		formattedTextField.setSize(300, 25);
@@ -258,12 +278,10 @@ public class Template {
 		EastMenu.setBorder(BorderFactory.createEtchedBorder());
 		
 		JButton More = new JButton("Add Chat");
-		
 		More.setBounds(new Rectangle(0, 0, 40, 10));
 		More.setBackground(Color.green);
 		More.setBorder(BorderFactory.createRaisedBevelBorder());
-		More.addActionListener(null);
-		
+		More.addActionListener(new AddRightMenuItemListener());
 		EastMenu.add(More);
 		
 		frame.getContentPane().add(EastMenu, BorderLayout.EAST);
@@ -272,7 +290,7 @@ public class Template {
 			formattedTextField.setSize(formattedTextField.getWidth() - 90, formattedTextField.getHeight());
 		}
 		
-
+		
 
 	}
 	
@@ -331,7 +349,6 @@ public class Template {
 				} catch (LineUnavailableException e1) {
 					e1.printStackTrace();
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 			}
@@ -351,7 +368,6 @@ public class Template {
 			Adding.addActionListener(null);
 			WestMenu.add(Adding);
 			WestMenu.updateUI();
-
 		}
 
 	}
@@ -363,7 +379,7 @@ public class Template {
 			JButton Adding = new JButton("New ChatRoom");
 			JDialog Room = new JDialog();
 			Room.setTitle("New Chat");
-			Adding.setBounds(new Rectangle(15, 15));
+			Adding.setBounds(new Rectangle(30, 15));
 			Adding.setBackground(Color.green);
 			Adding.setBorder(BorderFactory.createRaisedBevelBorder());
 			Adding.setVisible(true);
@@ -379,13 +395,15 @@ public class Template {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			TextMessage text = new TextMessage(formattedTextField.getText());
-			//MsgPanel.add(text,JLayeredPane.DRAG_LAYER);
-			//MsgPanel.updateUI();
-			CenterPanel.add(text,JLayeredPane.MODAL_LAYER);
-			CenterPanel.updateUI();
+			int indents = formattedTextField.getText().length() / 35;
+			String editedMsg = formattedTextField.getText().indent(indents);
+			TextMessage text = new TextMessage(editedMsg);
+			MsgPanel.add(text);
+			MsgPanel.setFocusable(true);
+			MsgPanel.updateUI();
 			TextMessage.clearTextArea(formattedTextField);
-			
+			msgs.add(text);
+			scrollPane.updateUI();
 			
 		}
 
@@ -410,6 +428,14 @@ public class Template {
 		}
 	}
 	
+	public class ProfileListener implements ActionListener{
 
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			
+			
+		}
+		
+	}
 	
 }

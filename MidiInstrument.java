@@ -311,7 +311,7 @@ public class MidiInstrument extends JPanel {
 
 		@Override
 		public void menuSelected(MenuEvent e) {
-			JMenu Replace = e.getSource();
+			
 			
 		}
 
