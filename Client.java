@@ -32,10 +32,8 @@ public class Client {
 	
 	public void SendMessage(JPanel MsgPanel, String InputMessage) {
 		try {
-			while(socket.isConnected()) {
-				/*There is some kind of loop that keeps happening 
-				 * and never prints out the message onto the msgPanel
-				 */
+			int counter = 1;
+			while(counter == 1) {
 				System.out.println("Before textmsg");
 				TextMessage text = new TextMessage(InputMessage);
 				MsgPanel.add(text);
@@ -44,6 +42,7 @@ public class Client {
 				bufferedWriter.newLine();
 				bufferedWriter.flush();
 				System.out.println("after buff writers");
+				++counter;
 			}
 		}catch(IOException e) {
 			closeAll(socket, bufferedReader, bufferedWriter );
@@ -51,6 +50,7 @@ public class Client {
 	}
 	
 	public void ListenForMessage(JPanel MsgPanel) {
+		//Messages for other Clients on the client handler are not being received.
 		new Thread(new Runnable() {
 			@Override
 			public void run(){

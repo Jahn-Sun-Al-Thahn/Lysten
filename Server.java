@@ -10,6 +10,7 @@ public class Server {
 	private ServerSocket serverSocket;
 	private String ServerName;
 	private int counter = 0;
+	private ClientHandler clientHandler;
 	
 	public Server(JPanel MsgPanel, ArrayList<TextMessage> Msgs, String username , String roomname) throws IOException {
 		this.ServerName = roomname;
@@ -32,6 +33,10 @@ public class Server {
 		this.serverSocket = serversocket;
 	}
 	
+	public ServerSocket getServerSocket() {
+		return serverSocket;
+	}
+
 	public void StartServer(JPanel MsgPanel, ArrayList<TextMessage> Msgs, String username, String roomname) {
 		try {
 			while(!serverSocket.isClosed()){
@@ -40,9 +45,8 @@ public class Server {
 				//Not Sure why the serversocket.accept() isn't connecting to any other sockets.
 				Socket socket = serverSocket.accept();
 				System.out.println("after socket");
-				ClientHandler clientHandler = new ClientHandler(socket, username ,roomname, MsgPanel );
+				clientHandler = new ClientHandler(socket, username ,roomname, MsgPanel );
 				System.out.println("after clienthandler");
-				JoinedServer(MsgPanel, Msgs);
 				Thread thread = new Thread(clientHandler);
 				thread.start();				
 			}	

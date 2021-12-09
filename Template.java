@@ -36,6 +36,7 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
+import java.net.Socket;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -412,6 +413,8 @@ public class Template {
 						Server newServer = new Server(MsgPanel, msgs, User.getUsername(), RName);
 						newServer.setServerName(RName);
 						User.AddToChatList(newServer);
+						MsgPanel.updateUI();
+						scrollPane.updateUI();
 					} catch (IOException e1) {
 						e1.printStackTrace();
 					}
@@ -426,6 +429,7 @@ public class Template {
 			Adding.setVisible(true);
 			Adding.addActionListener(null);
 			Adding.addActionListener(new OpenChatListener());
+			scrollPane.updateUI();
 			EastMenu.add(Adding);
 			EastMenu.updateUI();
 
