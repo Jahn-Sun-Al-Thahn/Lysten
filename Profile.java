@@ -5,12 +5,12 @@ import javax.swing.*;
 import java.io.*;
 import java.time.LocalDate;
 
-public class Profile extends JFrame {
+public class Profile extends JPanel {
 	//Class Variables
-	private static String Username;
+	private String Username;
 	private String Password;
 	private String url;
-	private String DScription;
+	private String Describe;
 	private static String profilePicture = "C://Users//Althon Johnson//Pictures//Saved Pictures//Background Images//Sun Wukong";
 	private ArrayList<String> userImages;
 	private ArrayList<File> audioSaves;
@@ -56,12 +56,13 @@ public class Profile extends JFrame {
 		
 		this.setBounds(0, 0, 545,643);
 		this.setVisible(true);
-		this.getContentPane().setLayout(new GridLayout(9,1));
+		this.setLayout(new GridLayout(9,1));
 		this.setBackground(Color.gray);
 		
 		UsernameButton = new JLabel(Username);
 		UsernameButton.setSize(45,30);
 		UsernameButton.setBorder(BorderFactory.createLineBorder(Color.GREEN));
+		UsernameButton.setText(Username);
 		UsernameButton.setAlignmentX(LEFT_ALIGNMENT);
 		
 		userPhotoIcon = new ImageIcon();
@@ -98,7 +99,7 @@ public class Profile extends JFrame {
 		
 		this.add(UsernameButton);
 		
-		//this.add(userPhotoIcon.getImage());		Figure out how to make Image show
+		//this.add(userPhotoIcon.getImage()); Figure out how to make Image show.
 		GridLayout MenuButtonBars = new GridLayout(1,3);
 		GridLayout GridVisSA = new GridLayout(2,8);
 		GridLayout GridVisFM = new GridLayout(1,3);
@@ -149,11 +150,11 @@ public class Profile extends JFrame {
 		
 	}
 
-	public static String getUsername() {
+	public String getUsername() {
 		return Username;
 	}
 
-	public static void setUsername(String username) {
+	public void setUsername(String username) {
 		Username = username;
 	}
 
@@ -217,7 +218,7 @@ public class Profile extends JFrame {
 		Scanner input = new Scanner(System.in);
 		int ch;
 		System.out.println("Which Favorite Chat would you like to choose?");
-		for (int i = 0; i < FriendsList.size(); i++) {
+		for (int i = 0; i < favoriteChats.size(); i++) {
 			System.out.println("Save #" + i + ": " + favoriteChats.get(i));
 		}
 		ch = input.nextInt();
@@ -364,29 +365,6 @@ public class Profile extends JFrame {
 		this.downVotes = downVotes;
 	}
 
-	public void setAudioSaves(ArrayList<File> audioSaves) {
-		this.audioSaves = audioSaves;
-	}
-
-	public void setBlocked(ArrayList<Profile> blocked) {
-		Blocked = blocked;
-	}
-
-	public void setFriendsList(ArrayList<Profile> friendsList) {
-		FriendsList = friendsList;
-	}
-
-	public void setFavoriteChats(ArrayList<Server> favoriteChats) {
-		this.favoriteChats = favoriteChats;
-	}
-
-	public void setPrivateMessages(ArrayList<Server> privateMessages) {
-		this.privateMessages = privateMessages;
-	}
-
-	public void setFavoriteForums(ArrayList<Server> favoriteForums) {
-		this.favoriteForums = favoriteForums;
-	}
 
 	public static void main(String[] args) {
 		Profile Test = new Profile();

@@ -13,6 +13,8 @@ public class TextMessage extends JPanel {
 	private Calendar time;
 	private ImageIcon profileImage;
 	private JTextArea message;
+
+
 	private JPanel North;
 	private JPanel South;
 	private JPanel East;
@@ -123,7 +125,15 @@ public class TextMessage extends JPanel {
 			message.setAlignmentX(RIGHT_ALIGNMENT);
 		}
 	}
+	
+	public JTextArea getMessage() {
+		return message;
+	}
 
+	public void setMessage(JTextArea message) {
+		this.message = message;
+	}
+	
 	public void ProfileImagePosition(JPanel west, JPanel east) {
 		if (this.isWest()) {
 			west.add(new JLabel("Profile Name", this.profileImage, JLabel.CENTER));

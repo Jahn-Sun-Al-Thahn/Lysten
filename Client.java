@@ -1,6 +1,7 @@
 import java.io.*;
 import java.net.Socket;
-import java.util.Scanner;
+import java.net.UnknownHostException;
+import javax.swing.JPanel;
 
 
 public class Client {
@@ -9,38 +10,47 @@ public class Client {
 	BufferedReader bufferedReader;
 	String Username;
 	
-	public Client(Socket socket, String Username) {
+	public String getUsername() {
+		return Username;
+	}
+
+	public void setUsername(String username) {
+		Username = username;
+	}
+
+	public Client(String username, JPanel MsgPanel, String InputMessage) throws UnknownHostException, IOException {
 		try {
-			this.socket = socket;
+			this.Username = username;
+			this.socket = new Socket("localhost", 1235);
 			this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 			this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			this.Username = Username;
-			
 		}catch(IOException e) {
 			closeAll(socket, bufferedReader, bufferedWriter);
 		}
+
 	}
 	
-	public void SendMessage() {
+	public void SendMessage(JPanel MsgPanel, String InputMessage) {
 		try {
-			bufferedWriter.write(Username);
-			bufferedWriter.newLine();
-			bufferedWriter.flush();
-			
-			Scanner InputMessage = new Scanner(System.in);
 			while(socket.isConnected()) {
-				String messageToSend =  InputMessage.nextLine();
-				bufferedWriter.write(Username + ": " + messageToSend);
+				/*There is some kind of loop that keeps happening 
+				 * and never prints out the message onto the msgPanel
+				 */
+				System.out.println("Before textmsg");
+				TextMessage text = new TextMessage(InputMessage);
+				MsgPanel.add(text);
+				System.out.println("after textMessage before bufferwriter");
+				bufferedWriter.write(InputMessage);
 				bufferedWriter.newLine();
 				bufferedWriter.flush();
+				System.out.println("after buff writers");
 			}
-			InputMessage.close();
 		}catch(IOException e) {
 			closeAll(socket, bufferedReader, bufferedWriter );
 		}
 	}
 	
-	public void ListenForMessage() {
+	public void ListenForMessage(JPanel MsgPanel) {
 		new Thread(new Runnable() {
 			@Override
 			public void run(){
@@ -48,7 +58,8 @@ public class Client {
 				while(socket.isConnected()) {
 					try {
 						msgFromGroupChat = bufferedReader.readLine();
-						System.out.print("\n" + msgFromGroupChat);
+						TextMessage newMessage = new TextMessage(msgFromGroupChat);
+						MsgPanel.add(newMessage);
 					}catch(IOException e) {
 						closeAll(socket, bufferedReader, bufferedWriter);
 					}
@@ -74,13 +85,5 @@ public class Client {
 		}
 	}
 	
-	public static void main(String[] arg) throws IOException{
-		Scanner keyboard = new Scanner(System.in);
-		System.out.println("Enter username for the GroupChat: ");
-		String Username = keyboard.nextLine();
-		Socket socket = new Socket("localhost", 1234);
-		Client client = new Client(socket, Username);
-		client.ListenForMessage();
-		client.SendMessage();
-	}
+
 }

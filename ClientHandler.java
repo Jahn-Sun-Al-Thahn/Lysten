@@ -2,21 +2,29 @@ import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import javax.swing.JPanel;
+
 public class ClientHandler implements Runnable {
 	private Socket socket;
 	private BufferedReader bufferedReader;
 	private BufferedWriter bufferedWriter;
-	private String Username;
+	private JPanel msgPanel;
+	private String User;
+	private String RoomName;
 	private static ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
 	
-	public ClientHandler(Socket socket) {
+	public ClientHandler(Socket socket, String username, String roomname, JPanel MsgPanel) {
+		clientHandlers.add(this);
+		this.User = username;
 		try {
+			this.RoomName = roomname;
+			this.msgPanel = MsgPanel;
 			this.socket = socket;
 			this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 			this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			this.Username = bufferedReader.readLine();
-			clientHandlers.add(this);
-			broadcastMessage("Server: " + Username + " has entered the Fray! \n");
+			
+			TextMessage Joined = new TextMessage(User + " has Joined " + RoomName);
+			broadcastMessage(Joined);
 		} catch (IOException e) {
 			closeAll(socket, bufferedReader, bufferedWriter);
 		}	
@@ -41,7 +49,10 @@ public class ClientHandler implements Runnable {
 		
 			for(ClientHandler clientHandler: clientHandlers) {
 				try {	
-					if(!clientHandler.Username.equals(Username)) {
+					if(!clientHandlers.contains(this)) {
+						TextMessage sendOut = new TextMessage(messageToSend);
+						msgPanel.add(sendOut);
+						msgPanel.updateUI();
 						clientHandler.bufferedWriter.write(messageToSend + "\n");
 						clientHandler.bufferedWriter.newLine();
 						clientHandler.bufferedWriter.flush();
@@ -52,9 +63,24 @@ public class ClientHandler implements Runnable {
 			}
 	}
 	
+	public void broadcastMessage(TextMessage textable) {
+		
+		for(ClientHandler clientHandler: clientHandlers) {
+			try {	
+					clientHandler.msgPanel.add(textable);
+					clientHandler.msgPanel.updateUI();
+					clientHandler.bufferedWriter.write(textable.getMessage().getText());
+					clientHandler.bufferedWriter.newLine();
+					clientHandler.bufferedWriter.flush();
+			}catch(IOException e) {
+				closeAll(socket, bufferedReader, bufferedWriter);
+			}
+		}
+}
+	
 	public void RemoveClientHandler() {
 		clientHandlers.remove(this);
-		broadcastMessage("Server: " + Username + " has left the chat. \n");
+		broadcastMessage(new TextMessage(User + " has left the chat. \n"));
 	}
 	
 	public void closeAll(Socket socket, BufferedReader bufferedreader, BufferedWriter bufferedwriter) {
